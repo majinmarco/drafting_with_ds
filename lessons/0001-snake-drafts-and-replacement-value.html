@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 1 · Snake Drafts &amp; Replacement Value</title>
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/quiz.js" defer></script>
+</head>
+<body>
+<div class="page">
+
+<header class="lesson-header">
+  <p class="kicker">Data-Driven Snake Drafting · Lesson 1</p>
+  <h1>The Snake Draft, and Why Value Is Always Relative</h1>
+  <p class="dek">Everything you need to know about how the game works — and the one idea that separates data-driven drafters from everyone else at the table.</p>
+</header>
+
+<h2>The game in ninety seconds</h2>
+
+<p>In your league, 12 people each build a roster of real NFL players. Every week of the NFL season, your roster is matched <strong>head-to-head</strong> against one other team in the league. Your players earn points for what they actually do on the field that week — yards, touchdowns, catches — and whichever of the two rosters scores more points wins the week. Best win–loss records make the playoffs; playoffs decide the champion.</p>
+
+<p>Each week you choose a <strong>starting lineup</strong> from your roster; only starters score. On ESPN's default settings, that lineup is:</p>
+
+<table>
+  <thead><tr><th>Slot</th><th>Count</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td>QB</td><td>1</td><td>Quarterback</td></tr>
+    <tr><td>RB</td><td>2</td><td>Running backs</td></tr>
+    <tr><td>WR</td><td>2</td><td>Wide receivers</td></tr>
+    <tr><td>TE</td><td>1</td><td>Tight end</td></tr>
+    <tr><td>FLEX</td><td>1</td><td>Any RB, WR, or TE</td></tr>
+    <tr><td>D/ST</td><td>1</td><td>A team's whole defense</td></tr>
+    <tr><td>K</td><td>1</td><td>Kicker</td></tr>
+    <tr><td>Bench</td><td>~7</td><td>Reserves; score nothing</td></tr>
+  </tbody>
+</table>
+
+<span class="sidenote">ESPN's default scoring is <em>PPR fractional</em>: 1 point per reception, 0.1 per rushing/receiving yard, 0.04 per passing yard, 6 per rushing/receiving TD, 4 per passing TD. Verify your league's actual settings in the ESPN app (League → Settings) — everything we compute later depends on them. See <a href="https://www.espn.com/fantasy/football/story/_/id/19540805/fantasy-football-101-settings">ESPN's settings guide</a>.</span>
+
+<p>The <strong>draft</strong> is where you acquire your initial roster. Every real NFL player is available; once someone drafts a player, he's theirs alone. With 12 teams filling ~16 roster spots, roughly 190 players get drafted. The draft is, by a wide margin, the highest-leverage event of your season — which is why it's worth optimizing.</p>
+
+<h2>How a snake draft works</h2>
+
+<p>Teams pick in a fixed order, but the order <strong>reverses every round</strong> — hence "snake." In a 12-team league, whoever has pick 1 of round 1 gets the <em>last</em> pick of round 2, then the first pick of round 3, and so on. This compensates for how much better pick 1 is than pick 12.</p>
+
+<p>Your pandas brain will appreciate that your pick numbers are a closed-form function of your draft slot <code>s</code> and round <code>r</code>:</p>
+
+<pre><code>pick(r, s) = (r - 1) * 12 + s          # odd rounds
+pick(r, s) = r * 12 - s + 1            # even rounds</code></pre>
+
+<p>So if you draw slot 4, your first five picks are numbers <strong>4, 21, 28, 45, 52</strong>. Notice the rhythm: after each odd-round pick you wait a long time, then get two picks close together. That gap — how many players come off the board between your picks — is the core constraint your strategy must plan around. In the middle of the snake you wait ~11 picks every time; on the turns (slots 1 and 12) you pick twice back-to-back, then wait 22.</p>
+
+<div class="quiz" id="q1"></div>
+
+<h2>The one idea that matters: value over replacement</h2>
+
+<p>Here is the mistake nearly every casual drafter makes: they rank players by <strong>projected points</strong>. By raw points, quarterbacks dominate — a top QB might project ~380 points while the best running back projects ~330. So surely you draft QBs early?</p>
+
+<p><strong>No.</strong> You aren't trying to maximize points at a position; you're trying to maximize your edge <em>over the alternative you'd otherwise start</em>. Every one of the 12 teams starts a QB, and the 12th-best QB still scores a lot. Running backs are different: production collapses fast as you go down the rankings, and every team needs two (plus flex). Compare typical PPR projection shapes (illustrative magnitudes):</p>
+
+<table>
+  <thead><tr><th>Position</th><th>Best player</th><th>Last starter*</th><th class="hl">Gap</th></tr></thead>
+  <tbody>
+    <tr><td>QB (12 start)</td><td>~380</td><td>~320</td><td class="hl">~60</td></tr>
+    <tr><td>RB (24+ start)</td><td>~330</td><td>~180</td><td class="hl">~150</td></tr>
+    <tr><td>WR (24+ start)</td><td>~340</td><td>~200</td><td class="hl">~140</td></tr>
+    <tr><td>TE (12 start)</td><td>~250</td><td>~140</td><td class="hl">~110</td></tr>
+  </tbody>
+</table>
+
+<span class="sidenote">*"Last starter" ≈ the QB12, RB24, WR24, TE12 — the worst player who still starts league-wide each week. Numbers are illustrative of typical PPR shapes, not 2026 projections; we'll compute the real ones from data in Lesson 3.</span>
+
+<p>This is <strong>value over replacement (VOR)</strong>: a player's worth is his projection <em>minus</em> the projection of the <strong>replacement level</strong> at his position — roughly, the best player you could get without spending a meaningful pick (the last starter, or the best player left undrafted). The elite QB is only ~60 points better than a QB you can grab ten rounds later. The elite RB is ~150 points better than his replacement. Same jersey-number points, wildly different <em>value</em>.</p>
+
+<div class="takeaway">A player's value is not his points. It is his points minus the points of the player you'd start instead. Scarcity at the position, not star power, is what wins drafts.</div>
+
+<p>This single reframing — from absolute to relative value — is the foundation of everything we'll build: the VOR cheat sheet, the market-gap analysis against average draft position, the simulator, the optimizer. It's also a general data-science lesson in disguise: <em>choosing the right baseline is the modeling decision</em>, and we'll spend a whole lesson on how to choose it.</p>
+
+<div class="quiz" id="q2"></div>
+<div class="quiz" id="q3"></div>
+
+<div class="primary-source">
+  <strong>Primary source for this lesson:</strong> read <a href="https://fantasyfootballanalytics.net/2024/08/winning-fantasy-football-with-projections-value-over-replacement-and-value-based-drafting.html">Winning Fantasy Football with Projections, VOR, and Value-Based Drafting</a> (Fantasy Football Analytics). It's the most statistically rigorous treatment of the idea you just learned, and Lesson 3's code follows its framework. ~15 min.
+</div>
+
+<div class="next-steps">
+  <strong>Before next lesson (5 minutes):</strong>
+  <ol>
+    <li>Open your ESPN league → <em>League → Settings</em>. Note the scoring rules (is it 1 pt per reception?), the roster slots, and — critically — <strong>your draft date and draft slot</strong> if assigned. Tell me next session.</li>
+    <li>Skim the primary source above.</li>
+  </ol>
+  <strong>Next lesson:</strong> pulling real projections and average-draft-position data into pandas, and seeing these scarcity curves for actual 2026 players.
+</div>
+
+<footer class="lesson-footer">
+  <p>Questions? Ask your teacher — anything unclear here (scoring rules, why the baseline is the "last starter," what a flex is really for) is exactly what the agent is for. Just ask in the terminal.</p>
+  <p>Course files: <a href="../MISSION.md">mission</a> · <a href="../RESOURCES.md">resources</a></p>
+</footer>
+
+</div>
+
+<script>
+quizzes.push({
+  sel: '#q1',
+  question: 'You draw slot 4 in your 12-team snake draft. What overall pick number is your round-2 pick?',
+  options: ['16', '21', '25', '28'],
+  answer: 1,
+  explain: {
+    good: 'Round 2 reverses: pick = 2×12 − 4 + 1 = 21.',
+    bad: 'Even rounds reverse the order: pick = r×12 − s + 1 = 24 − 4 + 1 = 21.'
+  }
+});
+quizzes.push({
+  sel: '#q2',
+  question: 'A QB projects 350 points; the replacement-level QB projects 300. An RB projects 260; the replacement-level RB projects 160. Who is the more valuable draft pick?',
+  options: ['The 350-point QB', 'The 260-point RB', 'Equal draft value'],
+  answer: 1,
+  explain: {
+    good: 'VOR: the RB is +100 over replacement, the QB only +50 — despite scoring fewer raw points.',
+    bad: 'Compare each player to his own replacement level: RB is 260−160 = +100; QB is 350−300 = +50. The RB wins.'
+  }
+});
+quizzes.push({
+  sel: '#q3',
+  question: '“Replacement level” at a position is best described as the projected output of…',
+  options: [
+    'the best player left after drafting',
+    'the average points among all starters',
+    'the worst player on your roster'
+  ],
+  answer: 0,
+  explain: {
+    good: 'Right — the baseline is what you could get for (almost) free: the best undrafted player, in practice approximated by the last league-wide starter.',
+    bad: 'Replacement level is what you could get for free — the best player nobody drafted (≈ the last league-wide starter), not an average or your own bench.'
+  }
+});
+</script>
+</body>
+</html>

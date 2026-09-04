@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Draft-Day Quick Reference · Data-Driven Snake Drafting</title>
+<link rel="stylesheet" href="../assets/course.css">
+<style>
+  .rule { margin: 0.9rem 0; }
+  .rule b { font-family: 'Gill Sans', 'Segoe UI', Helvetica, sans-serif; }
+  ol.checklist li { margin: 0.45rem 0; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="lesson-header">
+  <p class="kicker">Reference · Print me</p>
+  <h1>Draft-Day Quick Reference</h1>
+  <p class="dek">12-team ESPN PPR snake · everything from Lessons 1–3, compressed for the clock.</p>
+</header>
+
+<h2>Your picks</h2>
+<p>Slot <code>s</code>, round <code>r</code>: odd rounds <code>(r−1)·12 + s</code>, even rounds <code>r·12 − s + 1</code>. Mid-snake you wait ~11 picks between selections; on the turns (slots 1/12) you pick twice, then wait 22. Before each pick, compute your <em>next</em> pick number — it decides who you can afford to wait on.</p>
+
+<h2>Position timing (from the 2026 scarcity curves)</h2>
+<div class="rule"><b>Rounds 1–3: RB/WR only</b> (exception: an elite TE — McBride/Bowers — at fair price in R2–3). Steepest curves (RB gap ~166, WR ~141): this value never comes back.</div>
+<div class="rule"><b>QB: wait until ~R6–8.</b> QB curve glides (gap ~81, and QB13 is free on waivers). Exception: a top-2 QB falling 15+ picks past ADP is a genuine value pick.</div>
+<div class="rule"><b>TE: elite early or punt late.</b> The middle of the TE curve is a value desert — take the cliff-top or take the glide, never pay mid-round prices for it.</div>
+<div class="rule"><b>K and D/ST: your last two picks. No exceptions.</b> Both are ~replacement-level everywhere and streamable weekly.</div>
+<div class="rule"><b>Bench (7 spots): buy upside, not safety.</b> Late picks should be lottery tickets — ambiguous backfields, rookie WRs, your RB1's direct backup. A "safe" 140-point veteran is replacement level with extra steps. Never a second K or D/ST.</div>
+
+<h2>Every pick, in order (30 seconds)</h2>
+<ol class="checklist">
+  <li><strong>Filter</strong> the cheat-sheet table to available players; sort by <strong>VOR</strong>.</li>
+  <li><strong>Check the edge</strong> of your top 2–3 candidates: if a target's ADP is well <em>after</em> your next pick number, he'll likely still be there — take the scarcer player now instead.</li>
+  <li><strong>Check roster shape:</strong> can you still fill every starting slot with real value? (2 RB + 2 WR + flex ≈ aim for 5 combined RB/WR by round 6.)</li>
+  <li><strong>Pick. Don't reach on names</strong> — news and hype are already in ADP, and ADP is already in your plan.</li>
+</ol>
+
+<h2>Traps</h2>
+<p><strong>Position runs:</strong> when four QBs go in a row, the room is panicking — that's when the RB/WR value falls to you. Follow the sheet, not the room. <strong>Bye weeks:</strong> ignore them on draft day except avoiding QB = TE bye if you punt both. <strong>Your own fandom:</strong> the sheet doesn't know your favorite team; that's its virtue.</p>
+
+<div class="primary-source">
+  Backed by: <a href="https://fantasyfootballanalytics.net/2024/08/winning-fantasy-football-with-projections-value-over-replacement-and-value-based-drafting.html">FFA — Projections, VOR &amp; Value-Based Drafting</a> · <a href="https://subvertadown.com/article/fantasy-snake-drafts-and-strategizing-for-scarcity----snake-value-based-drafting">Subvertadown — Snake VBD &amp; scarcity</a> · your own <code>lesson_3.py</code> cheat sheet (live VOR + edge).
+</div>
+
+<footer class="lesson-footer">
+  <p><a href="glossary.html">Glossary</a> · <a href="../lessons/0001-snake-drafts-and-replacement-value.html">Lesson 1</a> · <a href="../lessons/0002-pulling-your-leagues-data.html">Lesson 2</a> · Lesson 3: <code>lesson_3.py</code></p>
+</footer>
+
+</div>
+</body>
+</html>

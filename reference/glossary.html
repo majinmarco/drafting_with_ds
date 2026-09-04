@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Course Glossary · Data-Driven Snake Drafting</title>
+<link rel="stylesheet" href="../assets/course.css">
+<style>
+  dl { margin: 0; }
+  dt { font: 700 0.95rem/1.3 'Gill Sans', 'Segoe UI', Helvetica, sans-serif; margin-top: 1.1rem; }
+  dd { margin: 0.15rem 0 0 0; font-size: 0.95rem; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="lesson-header">
+  <p class="kicker">Reference</p>
+  <h1>Course Glossary</h1>
+  <p class="dek">Every term the lessons use, in one place. Print-friendly.</p>
+</header>
+
+<h2>The game</h2>
+<dl>
+  <dt>Head-to-head (H2H) points</dt>
+  <dd>League format where each week your roster's total points are compared against one opponent's; more points = a win. Your league's format.</dd>
+  <dt>Starting lineup / starters</dt>
+  <dd>The subset of your roster that scores in a given week. ESPN default: 1 QB, 2 RB, 2 WR, 1 TE, 1 FLEX, 1 D/ST, 1 K.</dd>
+  <dt>FLEX</dt>
+  <dd>A lineup slot that accepts an RB, WR, or TE — filled by your best remaining player among those positions.</dd>
+  <dt>Bench</dt>
+  <dd>Rostered players not in the starting lineup. They score nothing but provide injury/bye-week cover and upside bets.</dd>
+  <dt>D/ST</dt>
+  <dd>Defense/Special Teams — you start an entire NFL team's defense, scoring for sacks, turnovers, return TDs, points allowed.</dd>
+  <dt>PPR (points per reception)</dt>
+  <dd>Scoring where each catch is worth 1 point (ESPN default; "fractional" = partial points for yardage, e.g. 0.1/rushing yard). Inflates the value of pass-catchers.</dd>
+  <dt>Bye week</dt>
+  <dd>The one week each NFL team doesn't play; its players score zero. Why benches and positional depth matter.</dd>
+  <dt>Waiver wire</dt>
+  <dd>The pool of undrafted/dropped players you can add during the season. The practical embodiment of "replacement level."</dd>
+</dl>
+
+<h2>The draft</h2>
+<dl>
+  <dt>Snake draft</dt>
+  <dd>Draft where pick order reverses each round (1→12, then 12→1). Compensates for early-slot advantage.</dd>
+  <dt>Draft slot</dt>
+  <dd>Your fixed position (1–12) in the round-1 order. Determines all your pick numbers: odd rounds <code>(r−1)·12+s</code>, even rounds <code>r·12−s+1</code>.</dd>
+  <dt>The turn</dt>
+  <dd>Slots 1 and 12, which pick twice back-to-back and then wait 22 picks.</dd>
+  <dt>ADP (average draft position)</dt>
+  <dd>The average overall pick number at which a player is drafted across many real drafts. The market price of a player, and your best model of opponent behavior.</dd>
+  <dt>Mock draft</dt>
+  <dd>A practice draft against humans or bots (ESPN lobby, FantasyPros simulator). The rehearsal arena for any strategy.</dd>
+  <dt>Cheat sheet</dt>
+  <dd>Your prepared, ordered draft list — in this course, generated from data: players ranked by VOR with ADP alongside.</dd>
+  <dt>Reach / value pick</dt>
+  <dd>Drafting a player well before his ADP (reach) or well after it (value). Meaningful only relative to the market.</dd>
+</dl>
+
+<h2>The math</h2>
+<dl>
+  <dt>Projection</dt>
+  <dd>A model's estimate of a player's total (or weekly) fantasy points this season, in a specific scoring system.</dd>
+  <dt>Replacement level</dt>
+  <dd>The expected output of the best player at a position you could get without spending a meaningful pick — approximated by the "last starter" (QB12, RB24, WR24, TE12 in a 12-team default league) or best undrafted player.</dd>
+  <dt>VOR / VORP (value over replacement)</dt>
+  <dd>A player's projection minus his position's replacement level. The number that makes players comparable <em>across</em> positions.</dd>
+  <dt>VBD (value-based drafting)</dt>
+  <dd>The strategy of making each pick by VOR rather than raw projected points.</dd>
+  <dt>Positional scarcity</dt>
+  <dd>How steeply production falls as you go down a position's rankings. Steep (RB, WR) = draft early; flat (QB, TE, K, D/ST) = wait.</dd>
+  <dt>Scarcity curve</dt>
+  <dd>Plot of projected points vs positional rank. Its slope is scarcity; you drew the 2026 curves in Lesson 2.</dd>
+  <dt>Baseline</dt>
+  <dd>The rank chosen to define replacement level (e.g. RB24). The key modeling decision in any VOR system.</dd>
+</dl>
+
+<footer class="lesson-footer">
+  <p>Lessons: <a href="../lessons/0001-snake-drafts-and-replacement-value.html">1 · Snake &amp; replacement value</a> · <a href="../lessons/0002-pulling-your-leagues-data.html">2 · Pulling your league's data</a></p>
+</footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 2 · Pulling Your League's Data</title>
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/quiz.js" defer></script>
+</head>
+<body>
+<div class="page">
+
+<header class="lesson-header">
+  <p class="kicker">Data-Driven Snake Drafting · Lesson 2</p>
+  <h1>The Projections, the Market, and the Curves</h1>
+  <p class="dek">Pull ESPN's own 2026 projections and draft-market data into pandas, and watch Lesson 1's scarcity story appear in the real numbers.</p>
+</header>
+
+<p>In <a href="0001-snake-drafts-and-replacement-value.html">Lesson 1</a> you learned that value is relative to replacement level, using an <em>illustrative</em> table. Today you get the real thing: actual 2026 data, from the same API that powers your own ESPN league. Two datasets matter, and the difference between them is where your entire edge lives:</p>
+
+<h3>1 · Projections — what players are worth</h3>
+<p>A <strong>projection</strong> is a model's estimate of a player's total fantasy points this season. ESPN publishes weekly projections per player; summing weeks 1–18 gives a season projection <em>in your league's exact scoring</em>. Projections are the input to every value calculation we'll do.</p>
+
+<h3>2 · ADP — what players cost</h3>
+<p><strong>Average Draft Position (ADP)</strong> is the average pick number at which a player is being drafted across thousands of real drafts. It is the <em>market price</em>. A player with ADP 25.3 typically goes late in round 2. Crucially, ADP tells you what your 11 opponents will probably do — which is what lets you predict who'll still be available at your next pick.</p>
+
+<div class="takeaway">Projections are value; ADP is price. Drafting well means buying value for less than the market price — and the market's mistakes are visible only when you hold both datasets side by side.</div>
+
+<h2>Your task (~20 minutes)</h2>
+
+<p>This lesson's code lives in an interactive <a href="https://marimo.io">marimo</a> notebook. From the workspace root:</p>
+
+<pre><code>uvx marimo edit --sandbox lesson_1.py</code></pre>
+
+<p>The notebook pulls from ESPN's fantasy API (<code>leaguedefaults/3</code> = the default PPR settings your league uses), flattens the JSON into a tidy dataframe of <code>name, pos, proj, adp</code>, and saves ~390 players to <code>data/espn_players_2026.csv</code>. You should see Jahmyr Gibbs, Bijan Robinson, and Ja'Marr Chase at the top of the ADP order. Then complete its three TODO cells (positional rank, scarcity-curve plot, last-starter baselines) — check cells re-grade your work automatically as you type, and solutions are in an accordion at the bottom. You know all the pandas needed; the point is to <em>derive</em> the scarcity story yourself rather than take my word for it.</p>
+
+<span class="sidenote">This is an unofficial-but-public API; the interesting part is the JSON filtering — ESPN tags every stat line with <code>statSourceId</code> (0&nbsp;=&nbsp;actual, 1&nbsp;=&nbsp;projected) and <code>statSplitTypeId</code> (1&nbsp;=&nbsp;single week). Getting good at reading a messy nested API payload is a real DS skill; this one's a nice specimen.</span>
+
+<h3>Checkpoints</h3>
+<p>Against the data pulled Sep 2 (ADP drifts a little daily, so allow small differences), your TODO 3 output should be close to:</p>
+
+<table>
+  <thead><tr><th>Position</th><th>Top player</th><th>Last starter</th><th class="hl">Gap</th></tr></thead>
+  <tbody>
+    <tr><td>QB</td><td>Josh Allen, ~371</td><td>QB12 ~290</td><td class="hl">~81</td></tr>
+    <tr><td>RB</td><td>Jahmyr Gibbs, ~366</td><td>RB24 ~200</td><td class="hl">~166</td></tr>
+    <tr><td>WR</td><td>Puka Nacua, ~354</td><td>WR24 ~213</td><td class="hl">~141</td></tr>
+    <tr><td>TE</td><td>Trey McBride, ~242</td><td>TE12 ~169</td><td class="hl">~73</td></tr>
+  </tbody>
+</table>
+
+<p>Compare with Lesson 1's illustrative table: the shape is exactly what theory predicted — <strong>RB and WR fall off a cliff; QB and TE glide</strong>. And the bonus task shows the market broadly agrees: of the first 30 picks by ADP, 25 are RB/WR, with just one QB. (Josh Allen at ~371 points is the highest-projected player in the entire pool — and the market still lets him fall to pick ~19. Now you know why.)</p>
+
+<details>
+  <summary style="cursor:pointer; font-family:'Gill Sans','Segoe UI',sans-serif; font-size:0.85rem; letter-spacing:0.08em; text-transform:uppercase; font-weight:700; margin:1.5rem 0 0.5rem;">Stuck? Reference solutions</summary>
+<pre><code># TODO 1
+df["pos_rank"] = (df.groupby("pos")["proj"]
+                    .rank(ascending=False, method="first").astype(int))
+
+# TODO 2
+fig, ax = plt.subplots(figsize=(8, 5))
+for pos in ["QB", "RB", "WR", "TE"]:
+    d = df[(df.pos == pos) & (df.pos_rank &lt;= 40)].sort_values("pos_rank")
+    ax.plot(d.pos_rank, d.proj, label=pos)
+ax.set_xlabel("positional rank"); ax.set_ylabel("projected points")
+ax.legend(); fig.savefig(data_dir / "scarcity_curves.png", dpi=150)
+
+# TODO 3
+for pos, rank in BASELINE_RANK.items():
+    d = df[df.pos == pos]
+    top = d.loc[d.pos_rank == 1, "proj"].iloc[0]
+    base = d.loc[d.pos_rank == rank, "proj"].iloc[0]
+    print(f"{pos}: top {top:.0f}, last starter {base:.0f}, gap {top - base:.0f}")
+
+# Bonus
+print(df.nsmallest(30, "adp").pos.value_counts())</code></pre>
+</details>
+
+<div class="quiz" id="q1"></div>
+<div class="quiz" id="q2"></div>
+<div class="quiz" id="q3"></div>
+
+<div class="primary-source">
+  <strong>Primary source for this lesson:</strong> <a href="https://www.fantasyfootballdatapros.com/blog/intermediate/5">A Value-Based Draft Model — Fantasy Football Data Pros</a>. A pandas walkthrough of turning exactly this kind of data into a draft model; Lesson 3 builds ours on your ESPN data. ~20 min.
+</div>
+
+<div class="next-steps">
+  <strong>Next lesson (later today or tomorrow — draft is Sep 4!):</strong> turn these curves into your actual draft weapon: a full VOR cheat sheet — every player scored by value over replacement, merged with ADP so you can see which players the market is mispricing.
+  <br><br>New terms today are in the <a href="../reference/glossary.html">course glossary</a> — skim it once; every lesson uses its vocabulary.
+</div>
+
+<footer class="lesson-footer">
+  <p>Questions? Ask your teacher in the terminal — about the API payload, the pandas, or why the flex slot was ignored in the baselines (good catch if you wondered — that's a Lesson 3 topic).</p>
+  <p>Course files: <a href="../MISSION.md">mission</a> · <a href="../RESOURCES.md">resources</a> · <a href="../reference/glossary.html">glossary</a> · <a href="0001-snake-drafts-and-replacement-value.html">Lesson 1</a></p>
+</footer>
+
+</div>
+
+<script>
+quizzes.push({
+  sel: '#q1',
+  question: 'What does a player\'s ADP of 25.3 tell you?',
+  options: [
+    'the market drafts him late round two',
+    'his projection ranks about twenty-fifth overall',
+    'he scores roughly twenty-five points weekly'
+  ],
+  answer: 0,
+  explain: {
+    good: 'ADP is a market price: the average pick number where real drafts take him. Pick 25 = early-to-late round 2/3 turn territory in a 12-teamer.',
+    bad: 'ADP says nothing directly about points or projection rank — it is the average pick number at which real drafters take him: the market price.'
+  }
+});
+quizzes.push({
+  sel: '#q2',
+  question: 'In the real 2026 ESPN data, which position\'s scarcity curve drops most steeply — the strongest argument for drafting it early?',
+  options: ['RB', 'WR', 'QB', 'TE'],
+  answer: 0,
+  explain: {
+    good: 'RB: ~166 points from RB1 to RB24, the steepest fall. WR is close (~141); QB and TE glide.',
+    bad: 'RB falls ~166 points from top to last starter — steeper than WR (~141), and roughly double QB (~81) or TE (~73).'
+  }
+});
+quizzes.push({
+  sel: '#q3',
+  question: 'Where does your draft-day edge fundamentally come from?',
+  options: [
+    'gaps between projected value and market price',
+    'always drafting the highest projected player',
+    'knowing more player news than opponents'
+  ],
+  answer: 0,
+  explain: {
+    good: 'Exactly: when the market (ADP) prices a player below his value over replacement, you profit — like Josh Allen, top projection in the pool, available at pick ~19.',
+    bad: 'The edge is the spread between value (projection vs replacement) and price (ADP). Highest-projected-available ignores scarcity; news is already priced into ADP.'
+  }
+});
+</script>
+</body>
+</html>
